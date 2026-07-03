@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Sandbox</title>
+
+</head>
+
+<body>
+
+    <div id="app">
+
+        <div id="scene"></div>
+
+        <aside id="panel">
+
+            <div class="logo">
+
+                <div class="logo-icon"></div>
+
+                <div>
+
+                    <h1>Sandbox</h1>
+
+                    <p>Desktop Gesture Interface</p>
+
+                </div>
+
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="status">
+
+                <div class="card">
+
+                    <div>
+
+                        Camera
+
+                    </div>
+
+                    <strong>Waiting</strong>
+
+                </div>
+
+                <div class="card">
+
+                    <div>
+
+                        Gesture
+
+                    </div>
+
+                    <strong>None</strong>
+
+                </div>
+
+                <div class="card">
+
+                    <div>
+
+                        Object
+
+                    </div>
+
+                    <strong>Cube</strong>
+
+                </div>
+
+                <div class="card">
+
+                    <div>
+
+                        FPS
+
+                    </div>
+
+                    <strong id="fps">60</strong>
+
+                </div>
+
+            </div>
+
+            <button>
+
+                Start Camera
+
+            </button>
+            <p>
+    Objects:
+    <strong id="objectCount">1</strong>
+</p>
+
+<button id="addCube">
+    Add Cube
+</button>
+
+<button id="deleteCube">
+    Delete Selected
+</button>
+
+<button id="resetScene">
+    Reset Scene
+</button>
+        </aside>
+
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+
+</body>
+
+</html>
