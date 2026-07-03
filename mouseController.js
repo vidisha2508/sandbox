@@ -32,6 +32,15 @@ export function setupMouse(app) {
 
     window.addEventListener("pointerdown", (event) => {
 
+        // Ignore clicks on the UI panel
+        const panel = document.getElementById("panel");
+
+        if (panel && panel.contains(event.target)) {
+
+            return;
+
+        }
+
         mouse.x =
             (event.clientX / window.innerWidth) * 2 - 1;
 
@@ -40,7 +49,9 @@ export function setupMouse(app) {
 
         raycaster.setFromCamera(mouse, camera);
 
+        // ---------------------------------
         // Ghost Click
+        // ---------------------------------
 
         const ghostHits = raycaster.intersectObjects(
             ghostManager.ghosts
@@ -63,7 +74,9 @@ export function setupMouse(app) {
 
         }
 
+        // ---------------------------------
         // Cube Click
+        // ---------------------------------
 
         const cubeHits = raycaster.intersectObjects(
             cubeManager.cubes
@@ -71,13 +84,31 @@ export function setupMouse(app) {
 
         if (cubeHits.length > 0) {
 
-            cubeManager.select(
-                cubeHits[0].object
-            );
+            if (cubeManager.mode === "group") {
 
-            ghostManager.show(
-                cubeHits[0].object
-            );
+                cubeManager.select(cubeHits[0].object);
+
+                cubeManager.cubes.forEach(cube => {
+
+                    cube.material.color.setHex(
+                        cube.userData.selectedColor
+                    );
+
+                });
+
+            }
+
+            else {
+
+                cubeManager.select(
+                    cubeHits[0].object
+                );
+
+                ghostManager.show(
+                    cubeHits[0].object
+                );
+
+            }
 
             dragging = true;
 
@@ -87,7 +118,9 @@ export function setupMouse(app) {
 
         }
 
+        // ---------------------------------
         // Empty Click
+        // ---------------------------------
 
         ghostManager.hide();
 
@@ -119,9 +152,9 @@ export function setupMouse(app) {
 
         raycaster.setFromCamera(mouse, camera);
 
-        // -------------------------
+        // ---------------------------------
         // Ghost Hover
-        // -------------------------
+        // ---------------------------------
 
         const ghostHits = raycaster.intersectObjects(
             ghostManager.ghosts
@@ -133,15 +166,17 @@ export function setupMouse(app) {
                 ghostHits[0].object
             );
 
-        } else {
+        }
+
+        else {
 
             ghostManager.unhover();
 
         }
 
-        // -------------------------
+        // ---------------------------------
         // Dragging
-        // -------------------------
+        // ---------------------------------
 
         if (
             !dragging ||
@@ -165,13 +200,36 @@ export function setupMouse(app) {
 
             });
 
-            cubeManager.moveSelected(
-                snapped
-            );
+            if (cubeManager.mode === "individual") {
 
-            ghostManager.show(
-                cubeManager.selectedCube
-            );
+                cubeManager.moveSelected(
+                    snapped
+                );
+
+                ghostManager.show(
+                    cubeManager.selectedCube
+                );
+
+            }
+
+            else {
+
+                const dx =
+                    snapped.x - cubeManager.selectedCube.position.x;
+
+                const dz =
+                    snapped.z - cubeManager.selectedCube.position.z;
+
+                if (dx !== 0 || dz !== 0) {
+
+                    cubeManager.moveGroup(
+                        dx,
+                        dz
+                    );
+
+                }
+
+            }
 
         }
 
