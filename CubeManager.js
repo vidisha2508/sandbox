@@ -12,6 +12,22 @@ export class CubeManager {
 
         this.selectedCube = null;
 
+        // -------------------------
+        // Mode
+        // -------------------------
+
+        this.mode = "individual";
+
+    }
+
+    // -------------------------
+    // Mode
+    // -------------------------
+
+    setMode(mode) {
+
+        this.mode = mode;
+
     }
 
     addCube() {
@@ -105,36 +121,88 @@ export class CubeManager {
         return moved;
 
     }
+    moveGroup(dx, dz) {
 
-    deleteSelected() {
-
-        if (!this.selectedCube) return;
+    this.cubes.forEach(cube => {
 
         this.grid.release({
 
-            x: this.selectedCube.position.x,
-
-            y: this.selectedCube.position.y,
-
-            z: this.selectedCube.position.z
+            x: cube.position.x,
+            y: cube.position.y,
+            z: cube.position.z
 
         });
 
-        this.scene.remove(
+    });
 
-            this.selectedCube
+    this.cubes.forEach(cube => {
 
-        );
+        cube.position.x += dx;
+        cube.position.z += dz;
 
-        this.cubes = this.cubes.filter(
+    });
 
-            cube => cube !== this.selectedCube
+    this.cubes.forEach(cube => {
 
-        );
+        this.grid.occupy({
+
+            x: cube.position.x,
+            y: cube.position.y,
+            z: cube.position.z
+
+        }, cube);
+
+    });
+
+}
+
+    deleteSelected() {
+
+    if (this.mode === "group") {
+
+        this.cubes.forEach(cube => {
+
+            this.grid.release({
+
+                x: cube.position.x,
+                y: cube.position.y,
+                z: cube.position.z
+
+            });
+
+            this.scene.remove(cube);
+
+        });
+
+        this.cubes = [];
 
         this.selectedCube = null;
 
+        return;
+
     }
+
+    if (!this.selectedCube) return;
+
+    this.grid.release({
+
+        x: this.selectedCube.position.x,
+        y: this.selectedCube.position.y,
+        z: this.selectedCube.position.z
+
+    });
+
+    this.scene.remove(this.selectedCube);
+
+    this.cubes = this.cubes.filter(
+
+        cube => cube !== this.selectedCube
+
+    );
+
+    this.selectedCube = null;
+
+}
 
     reset() {
 
