@@ -17,8 +17,10 @@ export function setupUI(app) {
     const addBtn = document.getElementById("addCube");
 
     const deleteBtn = document.getElementById("deleteCube");
-
+    console.log(deleteBtn);
     const resetBtn = document.getElementById("resetScene");
+
+    const modeBtn = document.getElementById("modeBtn");
 
     // -------------------------
     // Counter
@@ -56,21 +58,17 @@ export function setupUI(app) {
     // Delete Cube
     // -------------------------
 
-    deleteBtn.addEventListener(
+    deleteBtn.addEventListener("click", () => {
 
-        "click",
+    console.log("DELETE BUTTON CLICKED");
 
-        () => {
+    cubeManager.deleteSelected();
 
-            cubeManager.deleteSelected();
+    ghostManager.hide();
 
-            ghostManager.hide();
+    updateCounter();
 
-            updateCounter();
-
-        }
-
-    );
+});
 
     // -------------------------
     // Reset Scene
@@ -89,6 +87,54 @@ export function setupUI(app) {
             cubeManager.addCube();
 
             updateCounter();
+
+        }
+
+    );
+
+    // -------------------------
+    // Toggle Mode
+    // -------------------------
+
+    modeBtn.addEventListener(
+
+        "click",
+
+        () => {
+
+            if (cubeManager.mode === "individual") {
+
+    cubeManager.setMode("group");
+
+    modeBtn.textContent = "Individual Mode";
+
+    ghostManager.hide();
+
+    cubeManager.cubes.forEach(cube => {
+
+        cube.material.color.setHex(
+            cube.userData.selectedColor
+        );
+
+    });
+
+} else {
+
+    cubeManager.setMode("individual");
+
+    modeBtn.textContent = "Group Mode";
+
+    cubeManager.cubes.forEach(cube => {
+
+        cube.material.color.setHex(
+            cube.userData.defaultColor
+        );
+
+    });
+
+    cubeManager.selectedCube = null;
+
+}
 
         }
 
