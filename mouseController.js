@@ -4,14 +4,15 @@ export function setupMouse(app) {
 
     const {
 
-        camera,
-        controls,
+    camera,
+    renderer,
+    controls,
 
-        cubeManager,
-        ghostManager,
-        gridManager
+    cubeManager,
+    ghostManager,
+    gridManager
 
-    } = app;
+} = app;
 
     const raycaster = new THREE.Raycaster();
 
@@ -32,22 +33,33 @@ export function setupMouse(app) {
 
     window.addEventListener("pointerdown", (event) => {
 
-        // Ignore clicks on the UI panel
-        const panel = document.getElementById("panel");
+    // Ignore UI clicks
+    const toolbar = document.getElementById("toolbar");
 
-        if (panel && panel.contains(event.target)) {
+    if (toolbar && toolbar.contains(event.target)) {
 
-            return;
+        return;
 
-        }
+    }
 
-        mouse.x =
-            (event.clientX / window.innerWidth) * 2 - 1;
+    const statusPanel = document.getElementById("statusPanel");
 
-        mouse.y =
-            -(event.clientY / window.innerHeight) * 2 + 1;
+    if (statusPanel && statusPanel.contains(event.target)) {
 
-        raycaster.setFromCamera(mouse, camera);
+        return;
+
+    }
+
+    const rect =
+        renderer.domElement.getBoundingClientRect();
+
+    mouse.x =
+        ((event.clientX - rect.left) / rect.width) * 2 - 1;
+
+    mouse.y =
+        -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
 
         // ---------------------------------
         // Ghost Click
@@ -141,14 +153,23 @@ export function setupMouse(app) {
     // ---------------------------------
     // Pointer Move
     // ---------------------------------
+    window.addEventListener("pointerup", () => {
 
+    dragging = false;
+
+    controls.enabled = true;
+
+});
     window.addEventListener("pointermove", (event) => {
 
-        mouse.x =
-            (event.clientX / window.innerWidth) * 2 - 1;
+        const rect =
+    renderer.domElement.getBoundingClientRect();
 
-        mouse.y =
-            -(event.clientY / window.innerHeight) * 2 + 1;
+mouse.x =
+    ((event.clientX - rect.left) / rect.width) * 2 - 1;
+
+mouse.y =
+    -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
         raycaster.setFromCamera(mouse, camera);
 
@@ -236,7 +257,7 @@ export function setupMouse(app) {
     });
 
     // ---------------------------------
-    // Pointer Up
+    // Pointer Upok
     // ---------------------------------
 
     window.addEventListener("pointerup", () => {
