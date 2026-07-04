@@ -10,7 +10,12 @@ import { CubeManager } from "./managers/CubeManager";
 import { GridManager } from "./managers/GridManager";
 import { GhostManager } from "./managers/GhostManager";
 
-export function setupScene() {
+import { CameraManager } from "./camera/cameraManager";
+import { HandTracker } from "./camera/handTracker";
+import { HandRenderer } from "./camera/handRenderer";
+import { GestureDetector } from "./camera/gestures";
+
+export async function setupScene() {
 
     // -------------------------
     // Lights
@@ -50,9 +55,13 @@ export function setupScene() {
 
         new THREE.MeshStandardMaterial({
 
-            color: 0x111827,
+            color: 0xd6dbe4,
 
-            roughness: 1
+            roughness: 1,
+
+            transparent: true,
+
+            opacity: 0.30
 
         })
 
@@ -76,9 +85,12 @@ export function setupScene() {
 
         0x3b82f6,
 
-        0x334155
+        0x94a3b8
 
     );
+
+    grid.material.transparent = true;
+    grid.material.opacity = 0.35;
 
     scene.add(grid);
 
@@ -96,13 +108,89 @@ export function setupScene() {
 
     controls.enableDamping = true;
 
+    controls.target.set(0, 1.5, 0);
+
+    controls.update();
+
+    // -------------------------
+    // Camera + Hand Tracking
+    // -------------------------
+
+    const cameraManager = new CameraManager();
+
+    const handRenderer = new HandRenderer();
+
+    const gestureDetector = new GestureDetector();
+
+    const handTracker = new HandTracker(
+
+        handRenderer,
+
+        gestureDetector
+
+    );
+
+    // -------------------------
+    // Renderer
+    // -------------------------
+
+    const sceneContainer =
+
+        document.getElementById("scene");
+
+    sceneContainer.appendChild(
+
+        renderer.domElement
+
+    );
+
+    renderer.setSize(
+
+        sceneContainer.clientWidth,
+
+        sceneContainer.clientHeight
+
+    );
+
+    // -------------------------
+    // Resize
+    // -------------------------
+
+    window.addEventListener("resize", () => {
+
+        renderer.setSize(
+
+            sceneContainer.clientWidth,
+
+            sceneContainer.clientHeight
+
+        );
+
+        camera.aspect =
+
+            sceneContainer.clientWidth /
+
+            sceneContainer.clientHeight;
+
+        camera.updateProjectionMatrix();
+
+    });
+
     // -------------------------
     // UI References
     // -------------------------
 
-    const fpsElement = document.getElementById("fps");
+    const fpsElement =
 
-    const objectCount = document.getElementById("objectCount");
+        document.getElementById("fps");
+
+    const objectCount =
+
+        document.getElementById("objectCount");
+
+    // -------------------------
+    // Return
+    // -------------------------
 
     return {
 
@@ -122,7 +210,15 @@ export function setupScene() {
 
         fpsElement,
 
-        objectCount
+        objectCount,
+
+        cameraManager,
+
+        handRenderer,
+
+        gestureDetector,
+
+        handTracker
 
     };
 
