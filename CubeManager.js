@@ -103,7 +103,7 @@ export class CubeManager {
             cube.userData.selectedColor
 
         );
-
+        
     }
 
     moveSelected(targetPosition) {
@@ -175,7 +175,6 @@ export class CubeManager {
         });
 
         this.cubes = [];
-
         this.selectedCube = null;
 
         return;
@@ -184,21 +183,25 @@ export class CubeManager {
 
     if (!this.selectedCube) return;
 
+    const cube = this.selectedCube;
+
     this.grid.release({
 
-        x: this.selectedCube.position.x,
-        y: this.selectedCube.position.y,
-        z: this.selectedCube.position.z
+        x: cube.position.x,
+        y: cube.position.y,
+        z: cube.position.z
 
     });
 
-    this.scene.remove(this.selectedCube);
+    this.scene.remove(cube);
 
-    this.cubes = this.cubes.filter(
+    const index = this.cubes.indexOf(cube);
 
-        cube => cube !== this.selectedCube
+    if (index !== -1) {
 
-    );
+        this.cubes.splice(index, 1);
+
+    }
 
     this.selectedCube = null;
 
