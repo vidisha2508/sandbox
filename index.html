@@ -5,7 +5,10 @@
 
     <meta charset="UTF-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
 
     <title>Sandbox</title>
 
@@ -15,11 +18,13 @@
 
     <div id="app">
 
-        <div id="scene"></div>
+        <!-- ========================= -->
+        <!-- Toolbar -->
+        <!-- ========================= -->
 
-        <aside id="panel">
+        <header id="toolbar">
 
-            <div class="logo">
+            <div id="logo">
 
                 <div class="logo-icon"></div>
 
@@ -33,90 +38,131 @@
 
             </div>
 
-            <div class="divider"></div>
+            <div id="actions">
 
-            <div class="status">
+                <button id="addCube">
+                    Add Cube
+                </button>
 
-                <div class="card">
+                <button id="deleteCube">
+                    Delete Selected
+                </button>
 
-                    <div>
+                <button id="resetScene">
+                    Reset
+                </button>
 
-                        Camera
+                <button id="modeToggle">
+                    Individual
+                </button>
 
-                    </div>
+                <button id="startCamera">
+                    Start Camera
+                </button>
 
-                    <strong>Waiting</strong>
+            </div>
+
+        </header>
+
+        <!-- ========================= -->
+        <!-- Workspace -->
+        <!-- ========================= -->
+
+        <main id="workspace">
+
+            <!-- Camera -->
+
+            <video
+                id="cameraFeed"
+                autoplay
+                muted
+                playsinline
+            ></video>
+
+            <!-- Hand Skeleton Overlay -->
+
+            <canvas
+                id="handCanvas"
+            ></canvas>
+
+            <!-- Three.js -->
+
+            <div id="scene"></div>
+
+            <!-- Status Panel -->
+
+            <div id="statusPanel">
+
+                <div class="statusCard">
+
+                    Camera
+
+                    <strong id="cameraStatus">
+
+                        Off
+
+                    </strong>
 
                 </div>
 
-                <div class="card">
+                <div class="statusCard">
 
-                    <div>
+                    Gesture
 
-                        Gesture
+                    <strong id="gestureStatus">
 
-                    </div>
+                        No Hand
 
-                    <strong>None</strong>
-
-                </div>
-
-                <div class="card">
-
-                    <div>
-
-                        Object
-
-                    </div>
-
-                    <strong>Cube</strong>
+                    </strong>
 
                 </div>
 
-                <div class="card">
+                <div class="statusCard">
 
-                    <div>
+                    Mode
 
-                        FPS
+                    <strong id="modeText">
 
-                    </div>
+                        Individual
 
-                    <strong id="fps">60</strong>
+                    </strong>
+
+                </div>
+
+                <div class="statusCard">
+
+                    Objects
+
+                    <strong id="objectCount">
+
+                        1
+
+                    </strong>
+
+                </div>
+
+                <div class="statusCard">
+
+                    FPS
+
+                    <strong id="fps">
+
+                        60
+
+                    </strong>
 
                 </div>
 
             </div>
 
-            <button>
-
-                Start Camera
-
-            </button>
-            <p>
-    Objects:
-    <strong id="objectCount">1</strong>
-</p>
-
-<button id="addCube">
-    Add Cube
-</button>
-
-<button id="deleteCube">
-    Delete Selected
-</button>
-
-<button id="resetScene">
-    Reset Scene
-</button>
-
-<button id="modeBtn">
-    Group Mode
-</button>
-        </aside>
+        </main>
 
     </div>
 
-    <script type="module" src="/src/main.js"></script>
+    <script
+        type="module"
+        src="/src/main.js"
+    ></script>
 
 </body>
 
