@@ -1,0 +1,67 @@
+export class GestureDetector {
+
+    constructor() {
+
+        this.currentGesture = "OPEN";
+        this.previousPinch = false;
+
+        this.threshold = 0.05;
+
+    }
+
+    update(hand) {
+
+        if (!hand) {
+
+            this.previousPinch = false;
+            this.currentGesture = "NONE";
+
+            return this.currentGesture;
+
+        }
+
+        const thumb = hand[4];
+        const index = hand[8];
+
+        const dx = thumb.x - index.x;
+        const dy = thumb.y - index.y;
+
+        const distance = Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+        const pinching =
+            distance < this.threshold;
+
+        if (pinching && !this.previousPinch) {
+
+            this.currentGesture = "PINCH_START";
+
+        }
+
+        else if (pinching && this.previousPinch) {
+
+            this.currentGesture = "PINCHING";
+
+        }
+
+        else if (!pinching && this.previousPinch) {
+
+            this.currentGesture = "RELEASE";
+
+        }
+
+        else {
+
+            this.currentGesture = "OPEN";
+
+        }
+
+        this.previousPinch = pinching;
+
+        return this.currentGesture;
+
+    }
+
+}
