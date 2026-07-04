@@ -8,10 +8,12 @@ import { setupUI } from "./controllers/uiController";
 import { setupMouse } from "./controllers/mouseController";
 
 import { animate } from "./animation";
+import { setupCamera } from "./controllers/cameraController";
 
-const app = setupScene();
+const app = await setupScene();
 
 setupUI(app);
+setupCamera(app);
 
 setupMouse(app);
 
