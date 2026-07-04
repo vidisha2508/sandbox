@@ -6,7 +6,7 @@ export function createCube() {
 
     const material = new THREE.MeshPhysicalMaterial({
 
-        color: 0x3b82f6,
+        color: 0x2563eb,
 
         metalness: 0.9,
 
@@ -14,7 +14,10 @@ export function createCube() {
 
         clearcoat: 1,
 
-        clearcoatRoughness: 0.05
+        clearcoatRoughness: 0.05,
+        emissive: 0x0b3d91,
+
+    emissiveIntensity: 0.2
 
     });
 
