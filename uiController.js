@@ -1,122 +1,80 @@
-export function setupUI(app) {
+export function setupUI(app){
 
-    const {
+const {cubeManager,ghostManager,objectCount}=app;
 
-        cubeManager,
-        ghostManager,
-        objectCount
+const addBtn=document.getElementById("addCube");
+const deleteBtn=document.getElementById("deleteCube");
+const resetBtn=document.getElementById("resetScene");
+const modeBtn=document.getElementById("modeToggle");
+const modeText=document.getElementById("modeText");
 
-    } = app;
+const updateCounter=()=>objectCount.textContent=cubeManager.cubes.length;
 
-    const addBtn = document.getElementById("addCube");
-    const deleteBtn = document.getElementById("deleteCube");
-    const resetBtn = document.getElementById("resetScene");
+updateCounter();
 
-    // NEW ID
-    const modeBtn = document.getElementById("modeToggle");
-    const modeText = document.getElementById("modeText");
+app.ui={
 
-    function updateCounter() {
+add(){
 
-        objectCount.textContent = cubeManager.cubes.length;
+cubeManager.addCube();
+updateCounter();
 
-    }
+},
 
-    updateCounter();
+delete(){
 
-    // -------------------------
-    // Add Cube
-    // -------------------------
+cubeManager.deleteSelected();
+ghostManager.hide();
+updateCounter();
 
-    addBtn.addEventListener("click", () => {
+},
 
-        cubeManager.addCube();
+reset(){
 
-        updateCounter();
+cubeManager.reset();
+ghostManager.hide();
+cubeManager.addCube();
+updateCounter();
 
-    });
+},
 
-    // -------------------------
-    // Delete
-    // -------------------------
+mode(){
 
- deleteBtn.addEventListener("mousedown", (e) => {
+if(cubeManager.mode==="individual"){
 
-    e.preventDefault();
+cubeManager.setMode("group");
+modeBtn.textContent="Group";
+modeText.textContent="Group";
+ghostManager.hide();
 
-    cubeManager.deleteSelected();
+cubeManager.cubes.forEach(c=>
+c.material.color.setHex(c.userData.selectedColor)
+);
 
-    ghostManager.hide();
+}
 
-    updateCounter();
+else{
 
-});
+cubeManager.setMode("individual");
+modeBtn.textContent="Individual";
+modeText.textContent="Individual";
 
-    // -------------------------
-    // Reset
-    // -------------------------
+cubeManager.cubes.forEach(c=>
+c.material.color.setHex(c.userData.defaultColor)
+);
 
-    resetBtn.addEventListener("click", () => {
+ghostManager.hide();
+cubeManager.selectedCube=null;
 
-        cubeManager.reset();
+}
 
-        ghostManager.hide();
+}
 
-        cubeManager.addCube();
+};
 
-        updateCounter();
-
-    });
-
-    // -------------------------
-    // Mode Toggle
-    // -------------------------
-
-    modeBtn.addEventListener("click", () => {
-
-    if (cubeManager.mode === "individual") {
-
-        cubeManager.setMode("group");
-
-        modeBtn.textContent = "Group";
-        modeText.textContent = "Group";
-
-        ghostManager.hide();
-
-        cubeManager.cubes.forEach(cube => {
-
-            cube.material.color.setHex(
-                cube.userData.selectedColor
-            );
-
-        });
-
-    }
-
-    else {
-
-        cubeManager.setMode("individual");
-
-        modeBtn.textContent = "Individual";
-        modeText.textContent = "Individual";
-
-        cubeManager.cubes.forEach(cube => {
-
-            cube.material.color.setHex(
-                cube.userData.defaultColor
-            );
-
-        });
-
-        ghostManager.hide();
-
-        cubeManager.selectedCube = null;
-
-    }
-
-    // TEMP DEBUG
-    document.title = cubeManager.mode;
-
-});
+addBtn.onclick=app.ui.add;
+deleteBtn.onclick=app.ui.delete;
+resetBtn.onclick=app.ui.reset;
+modeBtn.onclick=app.ui.mode;
 
 }
