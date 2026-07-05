@@ -114,7 +114,8 @@ export class CubeManager {
 
             this.selectedCube,
 
-            targetPosition
+            targetPosition,
+            0.25
 
         );
 
