@@ -21,6 +21,14 @@ export class HandTracker {
 
         this.currentHands = [];
 
+        // -------------------------
+        // FPS Limiter
+        // -------------------------
+
+        this.lastDetection = 0;
+
+        this.detectionInterval = 1000 / 30;
+
     }
 
     setVideo(video) {
@@ -31,35 +39,33 @@ export class HandTracker {
 
     async init() {
 
-        const vision =
-            await FilesetResolver.forVisionTasks(
+        const vision = await FilesetResolver.forVisionTasks(
 
-                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
 
-            );
+        );
 
-        this.landmarker =
-            await HandLandmarker.createFromOptions(
+        this.landmarker = await HandLandmarker.createFromOptions(
 
-                vision,
+            vision,
 
-                {
+            {
 
-                    baseOptions: {
+                baseOptions: {
 
-                        modelAssetPath:
+                    modelAssetPath:
 
-                            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
+                        "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
 
-                    },
+                },
 
-                    runningMode: "VIDEO",
+                runningMode: "VIDEO",
 
-                    numHands: 2
+                numHands: 2
 
-                }
+            }
 
-            );
+        );
 
         this.loop();
 
@@ -67,63 +73,108 @@ export class HandTracker {
 
     loop() {
 
-    if (!this.video || !this.landmarker) return;
+        if (!this.video || !this.landmarker) return;
 
-    const gestureStatus =
-        document.getElementById("gestureStatus");
+        const gestureStatus =
 
-    const detect = () => {
+            document.getElementById("gestureStatus");
 
-        const result =
-            this.landmarker.detectForVideo(
+        const detect = (time) => {
 
-                this.video,
+            requestAnimationFrame(detect);
 
-                performance.now()
+            // ---------------------------------
+            // Limit MediaPipe to ~30 FPS
+            // ---------------------------------
 
-            );
+            if (
 
-        this.currentHands =
-            result.landmarks;
+                time - this.lastDetection <
 
-        this.renderer.render(
+                this.detectionInterval
 
-            this.video,
+            ) {
 
-            this.currentHands
+                return;
 
-        );
+            }
 
-        if (this.currentHands.length > 0) {
+            this.lastDetection = time;
 
-            this.currentGesture =
+            // ---------------------------------
+            // Detect Hands
+            // ---------------------------------
 
-                this.gestureDetector.update(
+            const result =
 
-                    this.currentHands[0]
+                this.landmarker.detectForVideo(
+
+                    this.video,
+
+                    time
 
                 );
 
-        }
+            this.currentHands =
 
-        else {
+                result.landmarks;
 
-            this.currentGesture =
+            // ---------------------------------
+            // Skeleton
+            // ---------------------------------
 
-                this.gestureDetector.update(null);
+            this.renderer.render(
 
-        }
+                this.video,
 
-        // UPDATE UI
-        gestureStatus.textContent =
-            this.currentGesture;
+                this.currentHands
+
+            );
+
+            // ---------------------------------
+            // Gesture
+            // ---------------------------------
+
+            if (
+
+                this.currentHands.length > 0
+
+            ) {
+
+                this.currentGesture =
+
+                    this.gestureDetector.update(
+
+                        this.currentHands[0]
+
+                    );
+
+            }
+
+            else {
+
+                this.currentGesture =
+
+                    this.gestureDetector.update(
+
+                        null
+
+                    );
+
+            }
+
+            // ---------------------------------
+            // UI
+            // ---------------------------------
+
+            gestureStatus.textContent =
+
+                this.currentGesture;
+
+        };
 
         requestAnimationFrame(detect);
 
-    };
-
-    detect();
-
-}
+    }
 
 }
