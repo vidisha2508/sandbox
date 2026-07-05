@@ -3,9 +3,26 @@ export class GestureDetector {
     constructor() {
 
         this.currentGesture = "OPEN";
+
         this.previousPinch = false;
 
-        this.threshold = 0.05;
+        // -------------------------
+        // Hysteresis
+        // -------------------------
+
+        this.pinchThreshold = 0.045;
+
+        this.releaseThreshold = 0.065;
+
+        // -------------------------
+        // Frame Smoothing
+        // -------------------------
+
+        this.requiredFrames = 3;
+
+        this.pinchFrames = 0;
+
+        this.releaseFrames = 0;
 
     }
 
@@ -14,51 +31,128 @@ export class GestureDetector {
         if (!hand) {
 
             this.previousPinch = false;
+
             this.currentGesture = "NONE";
+
+            this.pinchFrames = 0;
+
+            this.releaseFrames = 0;
 
             return this.currentGesture;
 
         }
 
         const thumb = hand[4];
+
         const index = hand[8];
 
         const dx = thumb.x - index.x;
+
         const dy = thumb.y - index.y;
 
         const distance = Math.sqrt(
+
             dx * dx +
+
             dy * dy
+
         );
 
-        const pinching =
-            distance < this.threshold;
+        // -------------------------
+        // Hysteresis
+        // -------------------------
 
-        if (pinching && !this.previousPinch) {
+        let pinching = this.previousPinch;
 
-            this.currentGesture = "PINCH_START";
+        if (!this.previousPinch) {
 
-        }
+            if (distance < this.pinchThreshold) {
 
-        else if (pinching && this.previousPinch) {
+                pinching = true;
 
-            this.currentGesture = "PINCHING";
-
-        }
-
-        else if (!pinching && this.previousPinch) {
-
-            this.currentGesture = "RELEASE";
+            }
 
         }
 
         else {
 
-            this.currentGesture = "OPEN";
+            if (distance > this.releaseThreshold) {
+
+                pinching = false;
+
+            }
 
         }
 
-        this.previousPinch = pinching;
+        // -------------------------
+        // Frame Smoothing
+        // -------------------------
+
+        if (pinching) {
+
+            this.pinchFrames++;
+
+            this.releaseFrames = 0;
+
+        }
+
+        else {
+
+            this.releaseFrames++;
+
+            this.pinchFrames = 0;
+
+        }
+
+        // -------------------------
+        // State Machine
+        // -------------------------
+
+        if (
+
+            this.pinchFrames >= this.requiredFrames &&
+
+            !this.previousPinch
+
+        ) {
+
+            this.currentGesture = "PINCH_START";
+
+            this.previousPinch = true;
+
+        }
+
+        else if (
+
+            this.previousPinch &&
+
+            pinching
+
+        ) {
+
+            this.currentGesture = "PINCHING";
+
+        }
+
+        else if (
+
+            this.releaseFrames >= this.requiredFrames &&
+
+            this.previousPinch
+
+        ) {
+
+            this.currentGesture = "RELEASE";
+
+            this.previousPinch = false;
+
+        }
+
+        else if (!this.previousPinch) {
+
+            this.currentGesture = "OPEN";
+
+        }
 
         return this.currentGesture;
 
