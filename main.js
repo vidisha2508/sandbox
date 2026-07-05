@@ -9,11 +9,12 @@ import { setupMouse } from "./controllers/mouseController";
 
 import { animate } from "./animation";
 import { setupCamera } from "./controllers/cameraController";
-
+import { setupHandController }from "./controllers/handController";
 const app = await setupScene();
 
 setupUI(app);
 setupCamera(app);
+setupHandController(app);
 
 setupMouse(app);
 
