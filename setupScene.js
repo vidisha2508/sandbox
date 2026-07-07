@@ -5,7 +5,8 @@ import { scene } from "./scene/scene";
 import { camera } from "./scene/camera";
 import { renderer } from "./scene/renderer";
 import { addLights } from "./scene/lights";
-
+import { DragController } from "./controllers/dragController";
+import { OrbitController } from "./controllers/orbitController";
 import { CubeManager } from "./managers/CubeManager";
 import { GridManager } from "./managers/GridManager";
 import { GhostManager } from "./managers/GhostManager";
@@ -111,6 +112,16 @@ export async function setupScene() {
     controls.target.set(0, 1.5, 0);
 
     controls.update();
+    const dragController=new DragController(
+camera,
+cubeManager,
+ghostManager,
+gridManager
+);
+
+const orbitController=new OrbitController(
+controls
+);
 
     // -------------------------
     // Camera + Hand Tracking
@@ -192,34 +203,28 @@ export async function setupScene() {
     // Return
     // -------------------------
 
-    return {
+return{
 
-        scene,
+scene,
+camera,
+renderer,
+controls,
 
-        camera,
+cubeManager,
+gridManager,
+ghostManager,
 
-        renderer,
+dragController,
+orbitController,
 
-        controls,
+fpsElement,
+objectCount,
 
-        cubeManager,
+cameraManager,
+handRenderer,
+gestureDetector,
+handTracker
 
-        gridManager,
-
-        ghostManager,
-
-        fpsElement,
-
-        objectCount,
-
-        cameraManager,
-
-        handRenderer,
-
-        gestureDetector,
-
-        handTracker
-
-    };
+};
 
 }
