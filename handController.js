@@ -1,8 +1,17 @@
 import * as THREE from "three";
-
+let rotating=false;
+let startAngle=0;
+let startRotation=0;
 export function setupHandController(app){
 
-const {camera,cubeManager,handTracker,ghostManager,gridManager}=app;
+const {
+camera,
+controls,
+cubeManager,
+handTracker,
+ghostManager,
+gridManager
+}=app;
 
 const raycaster=new THREE.Raycaster();
 const pointer=new THREE.Vector2();
@@ -28,13 +37,52 @@ b.style.outline="";
 b.style.boxShadow="";
 });
 }
+function getAngle(hand){
 
+const thumb=hand[4];
+const index=hand[8];
+
+return Math.atan2(
+index.y-thumb.y,
+index.x-thumb.x
+);
+
+}
 function loop(){
 
 requestAnimationFrame(loop);
 
 const hands=handTracker.currentHands;
+if(hands.length===2){
 
+const l=hands[0][0];
+const r=hands[1][0];
+
+const cx=(l.x+r.x)/2;
+const cy=(l.y+r.y)/2;
+
+if(!rotating){
+
+rotating=true;
+startAngle=cx;
+startRotation=cy;
+
+}
+
+controls.rotateLeft((cx-startAngle)*4);
+controls.rotateUp((cy-startRotation)*4);
+
+startAngle=cx;
+startRotation=cy;
+
+controls.update();
+
+}
+else{
+
+rotating=false;
+
+}
 if(!hands.length){
 
 drag=false;
@@ -154,8 +202,12 @@ z:hitCube.position.z
 
 }
 
-if(drag&&cube&&handTracker.currentGesture==="PINCHING"){
-
+if(
+hands.length===1 &&
+drag &&
+cube &&
+handTracker.currentGesture==="PINCHING"
+){
 if(raycaster.ray.intersectPlane(plane,hit)){
 
 const snap=gridManager.snap({
