@@ -1,161 +1,136 @@
-export class GestureDetector {
+export class GestureDetector{
 
-    constructor() {
+constructor(){
 
-        this.currentGesture = "OPEN";
+this.currentGesture="OPEN";
 
-        this.previousPinch = false;
+this.previousPinch=false;
 
-        // -------------------------
-        // Hysteresis
-        // -------------------------
+this.pinchThreshold=.045;
+this.releaseThreshold=.065;
 
-        this.pinchThreshold = 0.045;
+this.requiredFrames=3;
 
-        this.releaseThreshold = 0.065;
+this.pinchFrames=0;
+this.releaseFrames=0;
 
-        // -------------------------
-        // Frame Smoothing
-        // -------------------------
+}
 
-        this.requiredFrames = 3;
+isUp(tip,pip){
 
-        this.pinchFrames = 0;
+return tip.y<pip.y;
 
-        this.releaseFrames = 0;
+}
 
-    }
+update(hand){
 
-    update(hand) {
+if(!hand){
 
-        if (!hand) {
+this.previousPinch=false;
+this.currentGesture="NONE";
+this.pinchFrames=0;
+this.releaseFrames=0;
 
-            this.previousPinch = false;
+return this.currentGesture;
 
-            this.currentGesture = "NONE";
+}
 
-            this.pinchFrames = 0;
+const thumb=hand[4];
+const index=hand[8];
 
-            this.releaseFrames = 0;
+const dx=thumb.x-index.x;
+const dy=thumb.y-index.y;
 
-            return this.currentGesture;
+const distance=Math.sqrt(dx*dx+dy*dy);
 
-        }
+let pinching=this.previousPinch;
 
-        const thumb = hand[4];
+if(!this.previousPinch){
 
-        const index = hand[8];
+if(distance<this.pinchThreshold){
 
-        const dx = thumb.x - index.x;
+pinching=true;
 
-        const dy = thumb.y - index.y;
+}
 
-        const distance = Math.sqrt(
+}else{
 
-            dx * dx +
+if(distance>this.releaseThreshold){
 
-            dy * dy
+pinching=false;
 
-        );
+}
 
-        // -------------------------
-        // Hysteresis
-        // -------------------------
+}
 
-        let pinching = this.previousPinch;
+if(pinching){
 
-        if (!this.previousPinch) {
+this.pinchFrames++;
+this.releaseFrames=0;
 
-            if (distance < this.pinchThreshold) {
+}else{
 
-                pinching = true;
+this.releaseFrames++;
+this.pinchFrames=0;
 
-            }
+}
 
-        }
+const indexUp=hand[8].y<hand[6].y;
+const middleUp=hand[12].y<hand[10].y;
 
-        else {
+const ringDown=hand[16].y>hand[14].y-0.03;
+const pinkyDown=hand[20].y>hand[18].y-0.03;
 
-            if (distance > this.releaseThreshold) {
+if(
+indexUp &&
+middleUp &&
+ringDown &&
+pinkyDown &&
+!pinching
+){
+this.currentGesture="ROTATE";
 
-                pinching = false;
+return this.currentGesture;
 
-            }
+}
 
-        }
+if(
+this.pinchFrames>=this.requiredFrames &&
+!this.previousPinch
+){
 
-        // -------------------------
-        // Frame Smoothing
-        // -------------------------
+this.currentGesture="PINCH_START";
+this.previousPinch=true;
 
-        if (pinching) {
+}
 
-            this.pinchFrames++;
+else if(
+this.previousPinch &&
+pinching
+){
 
-            this.releaseFrames = 0;
+this.currentGesture="PINCHING";
 
-        }
+}
 
-        else {
+else if(
+this.releaseFrames>=this.requiredFrames &&
+this.previousPinch
+){
 
-            this.releaseFrames++;
+this.currentGesture="RELEASE";
+this.previousPinch=false;
 
-            this.pinchFrames = 0;
+}
 
-        }
+else{
 
-        // -------------------------
-        // State Machine
-        // -------------------------
+this.currentGesture="OPEN";
 
-        if (
+}
 
-            this.pinchFrames >= this.requiredFrames &&
+return this.currentGesture;
 
-            !this.previousPinch
-
-        ) {
-
-            this.currentGesture = "PINCH_START";
-
-            this.previousPinch = true;
-
-        }
-
-        else if (
-
-            this.previousPinch &&
-
-            pinching
-
-        ) {
-
-            this.currentGesture = "PINCHING";
-
-        }
-
-        else if (
-
-            this.releaseFrames >= this.requiredFrames &&
-
-            this.previousPinch
-
-        ) {
-
-            this.currentGesture = "RELEASE";
-
-            this.previousPinch = false;
-
-        }
-
-        else if (!this.previousPinch) {
-
-            this.currentGesture = "OPEN";
-
-        }
-
-        return this.currentGesture;
-
-    }
+}
 
 }
