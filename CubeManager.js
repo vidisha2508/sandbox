@@ -108,20 +108,37 @@ export class CubeManager {
 
     moveSelected(targetPosition) {
 
-        if (!this.selectedCube) return false;
+    if (!this.selectedCube) return false;
 
-        const moved = this.grid.moveCube(
+    // -------------------------
+    // GROUP MODE
+    // -------------------------
 
-            this.selectedCube,
+    if (this.mode === "group") {
 
-            targetPosition,
-            0.25
+        const dx = targetPosition.x - this.selectedCube.position.x;
+        const dz = targetPosition.z - this.selectedCube.position.z;
 
-        );
+        this.moveGroup(dx, dz);
 
-        return moved;
+        return true;
 
     }
+
+    // -------------------------
+    // INDIVIDUAL MODE
+    // -------------------------
+
+    return this.grid.moveCube(
+
+        this.selectedCube,
+
+        targetPosition,
+        0.25
+
+    );
+
+}
     moveGroup(dx, dz) {
 
     this.cubes.forEach(cube => {
