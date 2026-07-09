@@ -2,75 +2,58 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8" />
-
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     />
 
+    <link rel="icon" type="image/png" href="/logo.png">
     <title>Sandbox</title>
-
 </head>
 
 <body>
 
     <div id="app">
 
-        <!-- ========================= -->
-        <!-- Toolbar -->
-        <!-- ========================= -->
-
-        
-
-        <!-- ========================= -->
-        <!-- Workspace -->
-        <!-- ========================= -->
-
         <main id="workspace">
+
             <header id="toolbar">
 
-            <div id="logo">
+                <div id="logo">
+                    <img src="/logo.png" class="logo-icon">
 
-                <div class="logo-icon"></div>
+                    <div>
+                        <h1>Sandbox</h1>
+                        <p>Desktop Gesture Interface</p>
+                    </div>
+                </div>
 
-                <div>
+                <div id="actions">
 
-                    <h1>Sandbox</h1>
+                    <button id="addCube">
+                        Add Cube
+                    </button>
 
-                    <p>Desktop Gesture Interface</p>
+                    <button id="deleteCube">
+                        Delete Selected
+                    </button>
+
+                    <button id="resetScene">
+                        Reset
+                    </button>
+
+                    <button id="modeToggle">
+                        Individual
+                    </button>
+
+                    <button id="startCamera">
+                        Start Camera
+                    </button>
 
                 </div>
 
-            </div>
-
-            <div id="actions">
-
-                <button id="addCube">
-                    Add Cube
-                </button>
-
-                <button id="deleteCube">
-                    Delete Selected
-                </button>
-
-                <button id="resetScene">
-                    Reset
-                </button>
-
-                <button id="modeToggle">
-                    Individual
-                </button>
-
-                <button id="startCamera">
-                    Start Camera
-                </button>
-
-            </div>
-
-        </header>
-            <!-- Camera -->
+            </header>
 
             <video
                 id="cameraFeed"
@@ -79,78 +62,47 @@
                 playsinline
             ></video>
 
-            <!-- Hand Skeleton Overlay -->
-
             <canvas
                 id="handCanvas"
             ></canvas>
 
-            <!-- Three.js -->
-
             <div id="scene"></div>
-
-            <!-- Status Panel -->
 
             <div id="statusPanel">
 
                 <div class="statusCard">
-
                     Camera
-
                     <strong id="cameraStatus">
-
                         Off
-
                     </strong>
-
                 </div>
 
                 <div class="statusCard">
-
                     Gesture
-
                     <strong id="gestureStatus">
-
                         No Hand
-
                     </strong>
-
                 </div>
 
                 <div class="statusCard">
-
                     Mode
-
                     <strong id="modeText">
-
                         Individual
-
                     </strong>
-
                 </div>
 
                 <div class="statusCard">
-
                     Objects
-
                     <strong id="objectCount">
-
                         1
-
                     </strong>
-
                 </div>
 
                 <div class="statusCard">
-
                     FPS
-
                     <strong id="fps">
-
                         60
-
                     </strong>
-
                 </div>
 
             </div>
