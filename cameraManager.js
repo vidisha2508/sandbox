@@ -3,7 +3,6 @@ export class CameraManager {
     constructor() {
 
         this.video = document.createElement("video");
-
         this.video.autoplay = true;
         this.video.playsInline = true;
         this.video.muted = true;
@@ -20,7 +19,6 @@ export class CameraManager {
         });
 
         this.video.srcObject = stream;
-
         await this.video.play();
 
         return this.video;
