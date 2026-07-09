@@ -6,7 +6,8 @@ const{
 camera,
 handTracker,
 dragController,
-orbitController
+orbitController,
+ui
 }=app;
 
 const raycaster=new THREE.Raycaster();
@@ -21,7 +22,11 @@ document.getElementById("startCamera")
 ].filter(Boolean);
 
 let fx=.5,fy=.5;
-let uiPressed=false;
+
+// Button interaction
+let hoverBtn=null;
+let hoverStart=0;
+let buttonTriggered=false;
 
 function clearHover(){
 buttons.forEach(b=>{
@@ -35,12 +40,18 @@ function loop(){
 requestAnimationFrame(loop);
 
 const hands=handTracker.currentHands;
+const gesture=handTracker.currentGesture;
 
 if(!hands.length){
 
 clearHover();
-uiPressed=false;
+
+hoverBtn=null;
+hoverStart=0;
+buttonTriggered=false;
+
 dragController.update(pointer,"RELEASE");
+
 return;
 
 }
@@ -53,60 +64,102 @@ fy+=(tip.y-fy)*0.25;
 pointer.x=1-fx*2;
 pointer.y=-(fy*2-1);
 
+// Orbit Controller
 orbitController.update(
 hands[0],
-handTracker.currentGesture
+gesture
 );
 
+// Finger position
 const x=(1-fx)*window.innerWidth;
 const y=fy*window.innerHeight;
 
+// Hover detection
 clearHover();
 
-let hoverBtn=null;
+hoverBtn=null;
 
 for(const b of buttons){
 
 const r=b.getBoundingClientRect();
 
-if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom){
+if(
+x>=r.left &&
+x<=r.right &&
+y>=r.top &&
+y<=r.bottom
+){
 
 hoverBtn=b;
+
 b.style.outline="2px solid #3b82f6";
 b.style.boxShadow="0 0 12px #3b82f6";
+
 break;
 
 }
 
 }
 
-const gesture=handTracker.currentGesture;
+// -------- Button Click --------
 
-if(gesture==="PINCH_START"){
+if(hoverBtn){
 
-if(hoverBtn&&!uiPressed){
+if(hoverStart===0){
 
-uiPressed=true;
+hoverStart=performance.now();
+
+}
+
+if(
+!buttonTriggered &&
+performance.now()-hoverStart>250
+){
+
+buttonTriggered=true;
+
+switch(hoverBtn.id){
+
+case "addCube":
+ui.add();
+break;
+
+case "deleteCube":
+ui.delete();
+break;
+
+case "resetScene":
+ui.reset();
+break;
+
+case "modeToggle":
+ui.mode();
+break;
+
+case "startCamera":
 hoverBtn.click();
+break;
+
+}
+
+}
 
 }else{
 
-dragController.update(pointer,"PINCH_START");
+hoverStart=0;
+buttonTriggered=false;
 
 }
 
-}
+// -------- Cube Drag --------
 
-else if(gesture==="PINCHING"){
+if(
+gesture==="PINCH_START" ||
+gesture==="PINCHING" ||
+gesture==="RELEASE"
+){
 
-dragController.update(pointer,"PINCHING");
-
-}
-
-else if(gesture==="RELEASE"){
-
-uiPressed=false;
-dragController.update(pointer,"RELEASE");
+dragController.update(pointer,gesture);
 
 }
 
